@@ -1,0 +1,19 @@
+@import "../variables";
+.context__menu {
+  background-color: $chat-background;
+  font-size: 13px;
+  color: white;
+
+  .context__list {
+
+    .context__item {
+
+      &-avatar {
+        font-size: 20px !important;
+      }
+
+      &-title {
+      }
+    }
+  }
+}

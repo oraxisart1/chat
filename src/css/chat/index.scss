@@ -1,0 +1,17 @@
+@import "../variables";
+@import "message-area";
+@import "message";
+@import "context-menu";
+@import "confirm-dialog";
+.chat {
+  background: $chat-background;
+  height: 100%;
+  max-height: calc(100vh - #{$header-height});
+  box-sizing: border-box;
+}
+
+.unselectable {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}

@@ -1,0 +1,48 @@
+@import '../variables';
+
+.chat__messages-area {
+  overflow-y: auto;
+  max-height: calc(100vh - #{$header-height});
+  position: relative;
+
+  .chat__messages-group {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    .chat__messages-date {
+      background-color: #1E2C3A;
+      width: fit-content;
+      color: #fff;
+      border-radius: 30px;
+      padding: 5px 10px;
+      font-size: 13px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    .chat__message-container {
+      width: 100%;
+      padding: 5px 10px;
+    }
+
+  }
+
+  &__scroll-button {
+    position: sticky;
+    bottom: 5%;
+    left: 92%;
+    background-color: #243446;
+    color: #DBDBDB;
+  }
+}
+
+.scroll-button-leave-active, .scroll-button-enter-active {
+  transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.scroll-button-leave-to, .scroll-button-enter-from {
+  transform: translateX(10px);
+  opacity: 0;
+}
