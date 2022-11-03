@@ -1,0 +1,95 @@
+@import "_variables";
+
+.chat__message-form {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: #37474f;
+  display: flex;
+
+  &__input {
+    min-height: 40px;
+    width: 100%;
+    outline: none;
+    overflow: auto;
+    max-height: 20vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 8px 9px;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &:empty:before {
+      content: attr(placeholder);
+      pointer-events: none;
+      display: block;
+      color: black;
+    }
+  }
+
+  &__button {
+    max-height: 40px;
+    color: black;
+    transition: .2s;
+    &:hover {
+      color: white ;
+    }
+
+    &_send--active {
+      color: $primary-color;
+    }
+
+    &_emoji--active {
+      color: white;
+    }
+  }
+
+  &__emoji {
+    position: absolute;
+    bottom: 50px;
+    right: 5px;
+    width: 60%;
+    height: 70%;
+    background-color: #17212B;
+    border-radius: 10px;
+
+    &-picker {
+      background-color: #17212B;
+      color: white;
+
+      .v3-group h5.v3-sticky {
+        background-color: #17212B !important;
+        text-align: center;
+      }
+
+      .v3-header .v3-groups button.v3-group {
+        display: flex;
+        justify-content: center;
+        width: 12%;
+      }
+
+      button.v3-tone {
+        color: white !important;
+      }
+
+      .v3-body-inner .v3-emojis button img {
+        width: 30px !important;
+      }
+
+      .v3-header .v3-groups button.v3-group img {
+        filter: #{"invert()"};
+      }
+    }
+  }
+
+  &__replying-message {
+    position: absolute;
+    top: -40px;
+    display: flex;
+    width: 100%;
+    background-color: #37474f;
+    align-items: center;
+  }
+}

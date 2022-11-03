@@ -1,12 +1,11 @@
 <template>
   <q-chat-message
-    :text="message.text"
-    :stamp="message.stamp"
     size="6"
     text-color="white"
     :bg-color="message.name === 'me' ? 'cyan-9' : 'blue-grey-8'"
     :sent="message.name === 'me'"
     class="chat__message"
+    :class="getMessageClasses(message)"
     :data-next-same-user="message.isNextSame"
     :data-prev-same-user="message.isPreviousSame"
   >
@@ -24,7 +23,7 @@
           </div>
 
           <div class="col-12 ellipsis">
-            <span class="ellipsis chat__message-reply_text">{{ getMessageById(message.replyMessageId).text[0] }}</span>
+            <span class="ellipsis chat__message-reply_text">{{ getMessageById(message.replyMessageId).text }}</span>
           </div>
 
         </div>
@@ -61,8 +60,8 @@
           </q-list>
 
         </div>
-        <div class="col-12">
-          {{ message.text[0] }}
+        <div class="col-12 chat__message-content__text">
+          {{ message.text }}
         </div>
       </div>
     </template>
@@ -108,13 +107,30 @@
 </template>
 
 <script setup>
-import {getMessageById} from "components/chat/messages-area/functions"
+import {getMessageById} from "components/chat/messages-area/messages-area.functions"
 import {isImage} from "components/chat/functions";
 import {openUserProfile, scrollToMessage} from "components/chat/handlers";
+import {useChatStore} from "stores/chat";
+import {storeToRefs} from "pinia";
+import {computed} from "vue";
+
+const {getSelectedMessages} = storeToRefs(useChatStore())
+const selectedMessages = getSelectedMessages.value
 const props = defineProps({
   message: {
     type: Object,
     required: true
+  }
+})
+
+const getMessageClasses = computed(() => {
+  return message => {
+    const classes = [];
+    if (selectedMessages.has(message.id)) {
+      classes.push('chat__message--selected');
+    }
+
+    return classes;
   }
 })
 </script>

@@ -28,7 +28,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Копировать текст',
       icon: 'content_copy',
       expression: () => state.getSelectedMessages.size === 0,
-      action: (message) => navigator.clipboard.writeText(message.text[0])
+      action: (message) => navigator.clipboard.writeText(message.text)
     },
     {
       title: 'Редактировать',
@@ -56,7 +56,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Ответить',
       icon: 'reply',
       expression: () => state.getSelectedMessages.size === 0,
-      action: (message) => this.replyMessage(message)
+      action: (message) => state.startReplyingMessage(message.id)
     },
     {
       title: 'Выбрать',
@@ -70,7 +70,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Копировать выделенные как текст',
       icon: 'content_copy',
       expression: () => state.getSelectedMessages.size > 0 && state.getSelectedMessages.has(message.id),
-      action: () => this.copySelectedMessages(),
+      action: () => state.copySelectedMessages(),
     },
     {
       title: 'Удалить выбранные',

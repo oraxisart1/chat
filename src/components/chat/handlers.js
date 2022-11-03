@@ -4,12 +4,12 @@ export function openUserProfile(userName) {
 
 let lastAnimatedMessage = null;
 
-export function scrollToMessage(messageId) {
+export function scrollToMessage(messageId, isSmooth = true) {
   const message = document.querySelector(`[data-message-id="${messageId}"]`);
   if (message) {
     message.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center'
+      behavior: isSmooth ? 'smooth' : 'auto',
+      block: 'center',
     });
     const animation = [
       {backgroundColor: '#263238'},

@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
-import {getMessageContextOptions} from "components/chat/message/functions";
+import {getMessageContextOptions} from "components/chat/message/message.functions";
+import {getCurrentDate, getCurrentTime} from "components/chat/functions";
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -7,38 +8,39 @@ export const useChatStore = defineStore('chat', {
       '2021-09-19': [
         {
           id: 1,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'me',
           date: '2021-09-19',
-          isPinned: true
+          isPinned: true,
         },
         {
           id: 2,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'Jane',
-          date: '2021-09-19'
+          date: '2021-09-19',
+          isPinned: true,
         },
       ],
       '2022-09-15': [
         {
           id: 3,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:40',
           name: 'Jane',
           date: '2022-09-15'
         },
         {
           id: 4,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'me',
           date: '2022-09-15'
         },
         {
           id: 5,
-          text: ['How are you?'],
+          text: 'How are you?',
           stamp: '15:42',
           name: 'Jane',
           date: '2022-09-15'
@@ -47,7 +49,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-16': [
         {
           id: 10,
-          text: ['Terminator'],
+          text: 'Terminator',
           stamp: '15:41',
           name: 'me',
           date: '2022-09-16'
@@ -56,7 +58,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-17': [
         {
           id: 11,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'me',
           date: '2022-09-17',
@@ -64,7 +66,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 12,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'Jane',
           avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
@@ -75,7 +77,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-18': [
         {
           id: 13,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'me',
           date: '2022-09-18',
@@ -83,7 +85,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 14,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'Jane',
           avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
@@ -94,7 +96,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-19': [
         {
           id: 15,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'me',
           date: '2022-09-19',
@@ -102,7 +104,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 16,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '15:41',
           name: 'Jane',
           avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
@@ -113,7 +115,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-20': [
         {
           id: 17,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '14:04',
           name: 'me',
           date: '2022-09-20',
@@ -123,7 +125,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-21': [
         {
           id: 18,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '14:04',
           name: 'me',
           date: '2022-09-21',
@@ -131,7 +133,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 19,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '14:04',
           name: 'me',
           date: '2022-09-21',
@@ -139,7 +141,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 20,
-          text: ['Hello'],
+          text: 'Hello',
           stamp: '14:04',
           name: 'Jane',
           date: '2022-09-21',
@@ -147,7 +149,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 21,
-          text: ['HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello'],
+          text: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
           stamp: '14:04',
           name: 'Jane',
           date: '2022-09-21',
@@ -155,7 +157,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 22,
-          text: ['123'],
+          text: '123',
           stamp: '14:04',
           name: 'me',
           date: '2022-09-21',
@@ -166,7 +168,7 @@ export const useChatStore = defineStore('chat', {
       '2022-09-26': [
         {
           id: 23,
-          text: ['Here\'s my file'],
+          text: 'Here\'s my file',
           stamp: '13:23',
           name: 'me',
           date: '2022-09-26',
@@ -181,7 +183,7 @@ export const useChatStore = defineStore('chat', {
         },
         {
           id: 24,
-          text: ['Here\'s my file'],
+          text: 'Here\'s my file',
           stamp: '13:23',
           name: 'Jane',
           date: '2022-09-26',
@@ -197,10 +199,13 @@ export const useChatStore = defineStore('chat', {
       ]
     },
     selectedMessages: new Map(),
-    dialogConfirm: null,
+    messagesFilter: '',
+    messageText: '',
+    replyingMessageId: 0,
   }),
 
   getters: {
+    isMessages: state => !!Object.values(state.messages).length,
     allMessages: (state) => {
       for (const messages of Object.values(state.messages)) {
         messages.forEach((message, index) => {
@@ -240,6 +245,11 @@ export const useChatStore = defineStore('chat', {
 
       return result;
     },
+    isOtherUserMessageSelected: (state) => !!Array.from(state.selectedMessages.values()).find(message => message.name !== 'me'),
+    isPinnedMessages: (state) => !!state.pinnedMessagesCount,
+    pinnedMessagesCount: (state) => Object.values(state.getPinnedMessages).length,
+    getReplyingMessageId: (state) => state.replyingMessageId,
+    replyingMessage: (state) => state.indexedMessages[state.getReplyingMessageId]
   },
 
   actions: {
@@ -259,7 +269,7 @@ export const useChatStore = defineStore('chat', {
       this.indexedMessages[messageId].isPinned = false;
     },
     deleteMessage(message) {
-      this.messages[message.date] = this.messages[message.date].filter( msg => msg.id !== message.id )
+      this.messages[message.date] = this.messages[message.date].filter(msg => msg.id !== message.id)
       if (!this.messages[message.date].length) {
         delete this.messages[message.date]
       }
@@ -268,13 +278,47 @@ export const useChatStore = defineStore('chat', {
       for (const message of this.selectedMessages.values()) {
         this.deleteMessage(message)
       }
+
+      this.clearMessageSelection()
     },
-    confirm() {
-      this.dialogConfirm.confirm();
+    sendMessage() {
+      const currentDate = getCurrentDate();
+      if (!Array.isArray(this.messages[currentDate])) {
+        this.messages[currentDate] = [];
+      }
+
+      const newMessage = {
+        id: new Date().getTime(),
+        name: 'me',
+        stamp: getCurrentTime(),
+        text: this.messageText
+      };
+
+      if (this.replyingMessageId) {
+        newMessage.replyMessageId = this.replyingMessageId;
+      }
+
+      this.messages[currentDate].push(newMessage)
+
+      this.clearMessageInput();
+      this.stopReplyingMessage();
     },
-    setConfirm(confirmInstance) {
-      console.log(confirmInstance)
-      this.dialogConfirm = confirmInstance;
+    clearMessageInput() {
+      this.messageText = null;
+      document.querySelector('[data-message-input]').innerText = ''
+    },
+    startReplyingMessage(messageId) {
+      this.replyingMessageId = messageId;
+    },
+    stopReplyingMessage() {
+      this.replyingMessageId = null;
+    },
+    copySelectedMessages() {
+      let result = '';
+      for (const message of this.getSelectedMessages.values()) {
+        result += message.text + '\n'
+      }
+      window.navigator.clipboard.writeText(result.trim())
     }
   }
 })

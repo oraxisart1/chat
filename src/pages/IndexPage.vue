@@ -17,8 +17,10 @@
 </template>
 
 <script>
-import {defineComponent} from 'vue'
+import {computed, defineComponent} from 'vue'
 import Chat from '/src/components/chat/Chat'
+
+const c = computed(() => console)
 
 export default defineComponent({
   name: 'IndexPage',

@@ -1,9 +1,21 @@
 @import '../variables';
+@import "mixins";
+@import "_variables";
 
 .chat__messages-area {
   overflow-y: auto;
-  max-height: calc(100vh - #{$header-height});
-  position: relative;
+  max-height: calc(100vh - #{$header-height} - #{$message-input-height});
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $chat-background;
+  }
+  &::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 1);
+    border-radius: 5px;
+  }
 
   .chat__messages-group {
     display: flex;
@@ -26,7 +38,6 @@
       width: 100%;
       padding: 5px 10px;
     }
-
   }
 
   &__scroll-button {
@@ -35,6 +46,50 @@
     left: 92%;
     background-color: #243446;
     color: #DBDBDB;
+  }
+
+  .chat__messages-actions__container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #DBDBDB;
+    max-width: 60%;
+  }
+
+  .chat__messages-actions__button {
+    background-color: #3476AB;
+    opacity: 0.7;
+  }
+
+  &__date-picker {
+
+    &__card {
+      @include dialog-card(70vw)
+    }
+
+    &__input {
+      background-color: $chat-background;
+    }
+  }
+
+  .chat__messages__filter-button {
+    @include settings-button()
+  }
+
+  .chat__messages-filter__container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    width: 80%;
+    background-color: #7896a5;
+    opacity: 0.7;
+    border-radius: 10px;
+
+    .chat__messages-filter__input {
+      color: white;
+      padding-left: 10px;
+    }
   }
 }
 

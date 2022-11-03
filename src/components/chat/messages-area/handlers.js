@@ -1,12 +1,23 @@
 let scroller = null;
-export function scrollToBottom() {
+
+export function scrollToBottom(isDelay) {
   if (!scroller) {
     scroller = document.querySelector('[data-messages-area]');
   }
 
-  scroller.focus()
-  scroller.scrollTo({
-    top: scroller.scrollHeight - scroller.clientHeight,
-    behavior: 'smooth'
-  })
+  const scroll = () => {
+    scroller.focus()
+    scroller.scrollTo({
+      top: scroller.scrollHeight - scroller.clientHeight,
+      behavior: 'smooth'
+    })
+  }
+
+  if (isDelay) {
+    setTimeout(() => {
+      scroll();
+    })
+  } else {
+    scroll()
+  }
 }

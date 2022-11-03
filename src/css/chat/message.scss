@@ -1,5 +1,18 @@
 @import '../variables';
+@import "_variables";
 .chat__message {
+
+  &.chat__message--selected {
+
+    .q-message-text  {
+      background-color: $primary-color;
+
+      &:before {
+        color: $primary-color;
+      }
+    }
+  }
+
   &[data-prev-same-user="true"] {
     margin-bottom: 0;
     .q-avatar__content, .q-message-text::before {
@@ -14,6 +27,9 @@
   }
 
   .chat__message-content {
+    &__text {
+      white-space: pre-wrap !important;
+    }
     .chat__message-reply {
       border-left: 3px solid $primary-color;
       padding-left: 5px;

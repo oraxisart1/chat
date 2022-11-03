@@ -1,0 +1,19 @@
+@import '../variables';
+@import "_variables";
+
+@mixin dialog-card($left: 70vw) {
+  position: absolute;
+  left: $left;
+  background-color: $chat-background;
+  color: white;
+}
+
+@mixin settings-button($right: 65px) {
+  position: absolute;
+  background-color: #243446;
+  color: #DBDBDB;
+  z-index: 5;
+  top: 10px;
+  transition: .1s;
+  right: $right;
+}
