@@ -14,12 +14,84 @@
   box-sizing: border-box;
   position: relative;
 
-  &__button--settings {
-    @include settings-button(25px)
+  &__settings {
+    position: absolute;
+    z-index: 5;
+    top: 10px;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row-reverse;
+    width: 100%;
+    padding: 0 10px;
+
+    &-button_pinned {
+      @include chat-button(5px)
+    }
+
+    &-button_filter {
+      @include chat-button(5px);
+
+      &--active {
+        color: $positive-color;
+      }
+    }
+
+    &-button_actions {
+      @include chat-button(5px)
+    }
+
+    &__filter {
+      background-color: #7896a5;
+      opacity: 0.7;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      &-container {
+        width: 100%;
+      }
+
+      &-input {
+        color: white;
+        padding-left: 10px;
+      }
+
+      &-button_clear {
+        transition: .2s;
+
+        &:hover {
+          transform: rotate(180deg);
+          color: red;
+        }
+      }
+    }
   }
 
-  &__button--pinned {
-    @include settings-button(105px)
+  &__replying-messages {
+
+    &-list {
+      min-width: 100px;
+      background-color: $chat-background;
+    }
+
+    &__item {
+      max-width: 180px;
+      display: flex;
+      flex-direction: column;
+
+      &-user {
+        color: #6FBCF2;
+        font-size: 13px;
+      }
+
+      &-text {
+        color: white;
+      }
+    }
   }
 }
 

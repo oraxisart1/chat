@@ -72,47 +72,6 @@
         <span>Отменить</span>
       </q-btn>
     </div>
-
-    <transition name="filter-button">
-      <q-btn
-        icon="search"
-        round
-        v-if="isMessages && !isShowFilter"
-        size="12px"
-        class="chat__messages__filter-button"
-        @click="isShowFilter = true"
-        :style="{ color: !!messagesFilter?.trim() ? '#3bed38' : 'white' }"
-      >
-      </q-btn>
-    </transition>
-
-    <transition name="filter-field">
-      <div
-        class="row items-center chat__messages-filter__container"
-        v-if="isShowFilter"
-      >
-        <div class="col-11">
-          <q-input
-            v-model="messagesFilter"
-            dense
-            borderless
-            input-class="chat__messages-filter__input"
-            placeholder="Поиск по сообщениям..."
-            class="filter-input"
-          >
-          </q-input>
-        </div>
-        <div class="col-1">
-          <q-btn
-            icon="cancel"
-            round
-            unelevated
-            class="button-close-filter btn-hover-disable"
-            @click="isShowFilter = false"
-          ></q-btn>
-        </div>
-      </div>
-    </transition>
   </div>
 
   <ConfirmDialog ref="confirmDialog"></ConfirmDialog>
@@ -143,37 +102,36 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
-import {storeToRefs} from "pinia";
-import {useChatStore} from "stores/chat";
-import {formatDate, getDateElement} from "components/chat/messages-area/messages-area.functions";
-import Message from "components/chat/message/Message";
-import ContextMenu from "components/chat/context-menu/ContextMenu";
-import {scrollToBottom} from "components/chat/messages-area/handlers";
-import ConfirmDialog from "components/chat/confirm-dialog/ConfirmDialog";
+import {ref} from 'vue';
+import {storeToRefs} from 'pinia';
+import {useChatStore} from 'stores/chat';
+import {formatDate, getDateElement} from 'components/chat/messages-area/messages-area.functions';
+import Message from 'components/chat/message/Message';
+import ContextMenu from 'components/chat/menu/Menu';
+import {scrollToBottom} from 'components/chat/messages-area/handlers';
+import ConfirmDialog from 'components/chat/confirm-dialog/ConfirmDialog';
 
+const store = useChatStore();
 const {
   allMessages,
   getSelectedMessages,
   isOtherUserMessageSelected,
-  isMessages,
-  messagesFilter
-} = storeToRefs(useChatStore());
+  isChatFocused,
+} = storeToRefs(store);
 const {
   deleteSelectedMessages,
   selectMessage,
   unselectMessage,
   clearMessageSelection,
-  startReplyingMessage
-} = useChatStore();
+  startReplyingMessage,
+} = store;
 const scrollTarget = ref();
 const scrollPosition = ref(0);
 const scrollButtonTimer = ref(0);
 const confirmDialog = ref();
 const selectedMessages = getSelectedMessages.value;
-const isShowDatePicker = ref(false)
-const currentDate = ref(null)
-const isShowFilter = ref(false)
+const isShowDatePicker = ref(false);
+const currentDate = ref(null);
 
 function calculateScrollPosition(event) {
   const target = event.target;
@@ -195,30 +153,24 @@ function messageClickHandler(message) {
 
 function deleteSelectedMessagesHandler() {
   confirmDialog.value.show({
-    message: 'Вы уверены что хотите удалить выбранные сообщения?'
-  })
-    .then(() => {
-      deleteSelectedMessages()
-    })
-    .catch(() => {
-    })
+    message: 'Вы уверены что хотите удалить выбранные сообщения?',
+  }).then(() => {
+    deleteSelectedMessages();
+  }).catch(() => {
+  });
 }
 
 function datePickerHandler(event) {
-  isShowDatePicker.value = false
-  const target = getDateElement(scrollTarget.value, event)
-  console.log(target)
+  isShowDatePicker.value = false;
+  const target = getDateElement(scrollTarget.value, event);
   if (target) {
     target.scrollIntoView({
-      block: 'center'
-    })
+      block: 'center',
+    });
   }
 }
 
-// DEBUG
-const c = computed(() => console)
-
 function onLoad(index, done) {
-  done()
+  done();
 }
 </script>

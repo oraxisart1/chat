@@ -1,10 +1,23 @@
 let messageInput = null;
 setTimeout(() => {
   messageInput = document.querySelector('[data-message-input]');
-})
+});
 
 export function focusMessageInput() {
-  messageInput.focus();
+  setTimeout(() => {
+    const selection = window.getSelection();
+    const newRange = document.createRange();
+    const lastChild = messageInput?.lastChild;
+    if (lastChild) {
+      newRange.setStartAfter(lastChild);
+    } else {
+      newRange.setStart(messageInput, 0);
+    }
+
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  });
 }
 
 export function addEmojiToInput(emoji) {
@@ -14,7 +27,7 @@ export function addEmojiToInput(emoji) {
     range = selection.getRangeAt(0);
     range.deleteContents();
 
-    const element = document.createElement("div");
+    const element = document.createElement('div');
     element.innerHTML = emoji;
     let fragment = document.createDocumentFragment(),
       node,

@@ -1,3 +1,5 @@
+let messageInput = null;
+
 export function isImage(filePath) {
   return isExtensionsAgreed(filePath, ['png', 'jpg']);
 }
@@ -7,11 +9,11 @@ export function getFileExtension(filePath) {
 }
 
 export function isExtensionsAgreed(filePath, extensions) {
-  return extensions.includes(getFileExtension(filePath))
+  return extensions.includes(getFileExtension(filePath));
 }
 
 export function getFilteredContextOptions(options = [], entity) {
-  return options.filter(option => option.expression(entity))
+  return options.filter(option => option.expression?.(entity) ?? true);
 }
 
 export function getCurrentDate() {
@@ -20,9 +22,9 @@ export function getCurrentDate() {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-  }
+  };
 
-  return date.toLocaleDateString('en-CA', options)
+  return date.toLocaleDateString('en-CA', options);
 }
 
 export function getCurrentTime() {
@@ -30,7 +32,7 @@ export function getCurrentTime() {
   const options = {
     hour: '2-digit',
     minute: '2-digit',
-  }
+  };
 
-  return date.toLocaleTimeString('ru-RU', options)
+  return date.toLocaleTimeString('ru-RU', options);
 }

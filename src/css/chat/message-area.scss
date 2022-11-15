@@ -6,12 +6,15 @@
   overflow-y: auto;
   max-height: calc(100vh - #{$header-height} - #{$message-input-height});
   scrollbar-width: thin;
+
   &::-webkit-scrollbar {
     width: 10px;
   }
+
   &::-webkit-scrollbar-track {
     background-color: $chat-background;
   }
+
   &::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 1);
     border-radius: 5px;
@@ -69,26 +72,6 @@
 
     &__input {
       background-color: $chat-background;
-    }
-  }
-
-  .chat__messages__filter-button {
-    @include settings-button()
-  }
-
-  .chat__messages-filter__container {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 5;
-    width: 80%;
-    background-color: #7896a5;
-    opacity: 0.7;
-    border-radius: 10px;
-
-    .chat__messages-filter__input {
-      color: white;
-      padding-left: 10px;
     }
   }
 }

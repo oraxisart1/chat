@@ -4,10 +4,9 @@
       icon="attach_file"
       unelevated
       square
-      class="button__hover--disable chat__message-form__button"
+      class="button__hover--disable chat__message-form__button chat__message-form__button_files"
       @click="filePicker.pickFiles()"
-    >
-    </q-btn>
+    ></q-btn>
 
     <div class="chat__message-form__replying-message" v-if="!!replyingMessage">
       <div style="width: 10%" class="row justify-center items-center">
@@ -31,9 +30,45 @@
         </div>
       </div>
 
-      <div style="width: 10%" class="">
+      <div style="width: 10%">
         <q-icon
-          @click="onReplyClear"
+          @click="stopReplyingMessage"
+          class="cursor-pointer"
+          name="clear"
+          style="color: lightgray"
+          size="24px"
+        ></q-icon>
+      </div>
+    </div>
+
+    <div
+      class="chat__message-form__editing-message"
+      style="height: 40px"
+      v-if="!!editingMessage"
+    >
+      <div style="width: 10%" class="row justify-center items-center">
+        <q-icon
+          name="edit"
+          style="color: #6FBCF2"
+          size="24px"
+        ></q-icon>
+      </div>
+      <div
+        style="width: 80%"
+        class="row non-selectable cursor-pointer"
+        @click="scrollToMessage(editingMessage.id)"
+      >
+        <div class="col-12 q-pt-xs">
+          <span style="color: #6FBCF2">Редактирование сообщения</span>
+        </div>
+        <div class="col-12"
+             style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #F5F5F5">
+          <span>{{ editingMessage.text }}</span>
+        </div>
+      </div>
+      <div style="width: 10%" class="row justify-center items-center">
+        <q-icon
+          @click="stopEditingMessage"
           class="cursor-pointer"
           name="clear"
           style="color: lightgray"
@@ -49,6 +84,7 @@
       @input="messageInputHandler"
       @keydown.enter.exact.prevent="sendMessageHandler"
       placeholder="Введите сообщение..."
+      ref="messageInput"
     ></div>
 
     <q-btn
@@ -94,34 +130,36 @@
   </div>
 </template>
 
+<!--suppress JSValidateTypes -->
 <script setup>
-import '/node_modules/vue3-emoji-picker/dist/style.css'
-import {useChatStore} from "stores/chat";
-import {storeToRefs} from "pinia";
-import {resizeArea} from "components/chat/messages-area/messages-area.functions";
-import {scrollToBottom} from "components/chat/messages-area/handlers";
-import {reactive, ref, watch} from "vue";
-import EmojiPicker from "vue3-emoji-picker";
-import {emojiSelectHandler} from "components/chat/message-form/message-form.handlers";
-import {scrollToMessage} from "components/chat/handlers"
+import '/node_modules/vue3-emoji-picker/dist/style.css';
+import {useChatStore} from 'stores/chat';
+import {storeToRefs} from 'pinia';
+import {resizeArea} from 'components/chat/messages-area/messages-area.functions';
+import {scrollToBottom} from 'components/chat/messages-area/handlers';
+import {reactive, ref, watch} from 'vue';
+import EmojiPicker from 'vue3-emoji-picker';
+import {emojiSelectHandler} from 'components/chat/message-form/message-form.handlers';
+import {scrollToMessage} from 'components/chat/handlers';
 
-const {messageText, replyingMessage, indexedMessages} = storeToRefs(useChatStore())
-const {sendMessage} = useChatStore();
+const {messageText, replyingMessage, editingMessage} = storeToRefs(useChatStore());
+const {sendMessage, stopReplyingMessage, stopEditingMessage} = useChatStore();
 const filePicker = ref();
 const files = ref();
+const messageInput = ref();
 const is = reactive({
   btnHovered: false,
   pickerHovered: false,
   showEmojiPicker: false,
-})
+});
 
 watch(() => is.pickerHovered, (newVal) => {
   setTimeout(() => {
     if (!newVal && !is.btnHovered) {
       is.showEmojiPicker = false;
     }
-  }, 200)
-})
+  }, 200);
+});
 
 watch(() => is.btnHovered, (newVal) => {
   if (newVal) {
@@ -131,8 +169,8 @@ watch(() => is.btnHovered, (newVal) => {
     if (!newVal && !is.pickerHovered) {
       is.showEmojiPicker = false;
     }
-  }, 200)
-})
+  }, 200);
+});
 
 function messageInputHandler(event) {
   let value = event.target.innerText.trim();
@@ -153,6 +191,11 @@ function sendMessageHandler() {
 }
 
 watch(replyingMessage, () => {
-  resizeArea()
-})
+  resizeArea();
+});
+
+watch(editingMessage, (newValue) => {
+  messageInput.value.textContent = newValue?.text ?? '';
+  resizeArea();
+});
 </script>

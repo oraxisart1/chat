@@ -24,10 +24,11 @@
 </template>
 
 <script setup>
-import {defineExpose, ref} from "vue";
-defineExpose({show})
+import {defineExpose, ref} from 'vue';
 
-const isShow = ref(false)
+defineExpose({show});
+
+const isShow = ref(false);
 
 function open() {
   isShow.value = true;
@@ -39,7 +40,7 @@ function close() {
 
 const resolveLink = ref(null);
 const rejectLink = ref(null);
-const options = ref({})
+const options = ref({});
 
 function show(opts = {}) {
   open();
@@ -47,7 +48,7 @@ function show(opts = {}) {
   return new Promise((resolve, reject) => {
     resolveLink.value = resolve;
     rejectLink.value = reject;
-  })
+  });
 }
 
 function confirm() {

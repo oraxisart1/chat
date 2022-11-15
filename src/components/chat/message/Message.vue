@@ -108,7 +108,7 @@
 
 <script setup>
 import {getMessageById} from "components/chat/messages-area/messages-area.functions"
-import {isImage} from "components/chat/functions";
+import {isImage} from "components/chat/chat.functions";
 import {openUserProfile, scrollToMessage} from "components/chat/handlers";
 import {useChatStore} from "stores/chat";
 import {storeToRefs} from "pinia";

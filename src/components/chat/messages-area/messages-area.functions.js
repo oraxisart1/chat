@@ -1,12 +1,18 @@
-import {useChatStore} from "stores/chat";
-import {storeToRefs} from "pinia";
-import {scrollToBottom} from "components/chat/messages-area/handlers";
+import {useChatStore} from 'stores/chat';
+import {storeToRefs} from 'pinia';
+import {scrollToBottom} from 'components/chat/messages-area/handlers';
+
+const {
+  indexedMessages,
+  replyingMessage,
+  editingMessage,
+} = storeToRefs(useChatStore());
 
 export function formatDate(date) {
   date = new Date(date);
   const options = {
     day: 'numeric',
-    month: 'long'
+    month: 'long',
   };
 
   if (date.getFullYear() !== new Date().getFullYear()) {
@@ -15,8 +21,6 @@ export function formatDate(date) {
 
   return date.toLocaleDateString(undefined, options);
 }
-
-const {indexedMessages, replyingMessage} = storeToRefs(useChatStore());
 
 export function getMessageById(messageId) {
   return indexedMessages.value[messageId];
@@ -51,7 +55,7 @@ export function resizeArea() {
     inputHeight += 40;
   }*/
 
-  if (replyingMessage) {
+  if (replyingMessage.value || editingMessage.value) {
     inputHeight += 40;
   }
 
@@ -62,20 +66,17 @@ export function resizeArea() {
     /*if (this.is.replyMessage || this.is.editMessage) {
       inputMaxHeight += 40;
     }*/
-    if (replyingMessage) {
+    if (replyingMessage.value || editingMessage.value) {
       inputMaxHeight += 40;
     }
     if (inputHeight <= inputMaxHeight + 10) {
       const newAreaHeight = (bodyHeight - 50 - inputHeight) / bodyHeight * 100;
-      const scrollHeight = messageArea.scrollHeight - messageArea.clientHeight
+      const scrollHeight = messageArea.scrollHeight - messageArea.clientHeight;
       messageArea.style.maxHeight = newAreaHeight + 'vh';
 
       if (Math.floor(scrollHeight) - Math.floor(messageArea.scrollTop) < 10) {
         scrollToBottom();
       }
-      /*if (scrollInfo.verticalPercentage === 1) {
-        this.messagesArea.scrollBottom(false, true);
-      }*/
     }
     messageFormHeight = inputHeight;
   }

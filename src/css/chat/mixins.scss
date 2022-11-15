@@ -8,12 +8,10 @@
   color: white;
 }
 
-@mixin settings-button($right: 65px) {
-  position: absolute;
+@mixin chat-button($margin-left: 0px) {
   background-color: #243446;
   color: #DBDBDB;
   z-index: 5;
-  top: 10px;
   transition: .1s;
-  right: $right;
+  margin-left: $margin-left;
 }
