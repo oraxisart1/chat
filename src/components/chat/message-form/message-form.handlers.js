@@ -1,5 +1,5 @@
 import {addEmojiToInput} from "components/chat/message-form/message-form.functions";
-import {useChatStore} from "stores/chat";
+import {useChatStore} from "stores/chat/chat";
 import {storeToRefs} from "pinia";
 
 const {messageText} = storeToRefs(useChatStore());

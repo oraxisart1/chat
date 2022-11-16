@@ -1,23 +1,21 @@
 let scroller = null;
+setTimeout(() => {
+  scroller = document.querySelector('[data-messages-area]');
+}, 100);
 
 export function scrollToBottom(isDelay) {
-  if (!scroller) {
-    scroller = document.querySelector('[data-messages-area]');
-  }
-
   const scroll = () => {
-    scroller.focus()
-    scroller.scrollTo({
+    scroller.scrollBy({
       top: scroller.scrollHeight - scroller.clientHeight,
-      behavior: 'smooth'
-    })
-  }
+      behavior: 'smooth',
+    });
+  };
 
-  if (isDelay) {
+  if (isDelay === true) {
     setTimeout(() => {
       scroll();
-    })
+    });
   } else {
-    scroll()
+    scroll();
   }
 }

@@ -25,7 +25,7 @@
           :key="message.id"
           :data-message-id="message.id"
           @click="messageClickHandler(message)"
-          @dblclick="startReplyingMessage(message.id)"
+          @dblclick="messageDoubleClickHandler($event, message)"
         >
           <Message :message="message"></Message>
           <ContextMenu :entity="message" :options="message.contextOptions"></ContextMenu>
@@ -39,12 +39,12 @@
         round
         class="chat__messages-area__scroll-button"
         v-show="scrollPosition > 700"
-        @click="scrollToBottom"
+        @click="scrollToBottom(true)"
       >
       </q-btn>
     </transition>
 
-    <div class="chat__messages-actions__container" v-show="getSelectedMessages.size > 0">
+    <div class="chat__messages-actions__container" v-show="!isShowFilter && getSelectedMessages.size > 0">
       <q-btn
         class="chat__messages-actions__button q-mr-sm"
         no-caps
@@ -76,13 +76,13 @@
 
   <ConfirmDialog ref="confirmDialog"></ConfirmDialog>
 
-  <q-dialog v-model="isShowDatePicker" class="chat__messages-area__date-picker">
-    <q-card class="chat__messages-area__date-picker__card">
-      <q-card-section class="row items-center">
+  <q-dialog v-model="isShowDatePicker" class="chat__date-picker">
+    <q-card class="chat__date-picker__card">
+      <q-card-section class="chat__date-picker__input-container">
         <q-date
           v-model="currentDate"
           minimal
-          class="chat__messages-area__date-picker__input"
+          class="chat__date-picker__input"
           dark
           mask="YYYY-MM-DD"
           flat
@@ -101,11 +101,12 @@
   </q-dialog>
 </template>
 
+<!--suppress JSValidateTypes -->
 <script setup>
 import {ref} from 'vue';
 import {storeToRefs} from 'pinia';
-import {useChatStore} from 'stores/chat';
-import {formatDate, getDateElement} from 'components/chat/messages-area/messages-area.functions';
+import {useChatStore} from 'stores/chat/chat';
+import {formatDate, getDateElement} from 'components/chat/messages-area/messages-area.storeFunctions';
 import Message from 'components/chat/message/Message';
 import ContextMenu from 'components/chat/menu/Menu';
 import {scrollToBottom} from 'components/chat/messages-area/handlers';
@@ -116,7 +117,7 @@ const {
   allMessages,
   getSelectedMessages,
   isOtherUserMessageSelected,
-  isChatFocused,
+  isShowFilter,
 } = storeToRefs(store);
 const {
   deleteSelectedMessages,
@@ -172,5 +173,13 @@ function datePickerHandler(event) {
 
 function onLoad(index, done) {
   done();
+}
+
+function messageDoubleClickHandler(event, message) {
+  if (event.target.dataset.type === 'message-text' || selectedMessages.size > 0) {
+    return;
+  }
+
+  startReplyingMessage(message.id);
 }
 </script>

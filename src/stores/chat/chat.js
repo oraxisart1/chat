@@ -6,6 +6,9 @@ import {getCurrentDate, getCurrentTime} from 'components/chat/chat.functions';
 import {
   focusMessageInput,
 } from 'components/chat/message-form/message-form.functions';
+import {
+  getMessageElementById,
+} from 'components/chat/messages-area/messages-area.functions';
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -217,7 +220,6 @@ export const useChatStore = defineStore('chat', {
         isProject: true,
         online: true,
         id: 1,
-        isMember: true,
       },
       {
         fullName: 'Алексей Мосиевский',
@@ -260,6 +262,41 @@ export const useChatStore = defineStore('chat', {
         avatar: 'https://e7.pngegg.com/pngimages/621/689/png-clipart-avenhart-avatar-series-hat-meme-duck-hat-pl.png',
         fullName: 'Илья Максименко',
       },
+      {
+        id: 8,
+        online: false,
+        avatar: 'https://e7.pngegg.com/pngimages/621/689/png-clipart-avenhart-avatar-series-hat-meme-duck-hat-pl.png',
+        fullName: 'Матвей Казаков',
+      },
+      {
+        id: 9,
+        online: false,
+        avatar: 'https://e7.pngegg.com/pngimages/621/689/png-clipart-avenhart-avatar-series-hat-meme-duck-hat-pl.png',
+        fullName: 'Роман Степанов',
+      },
+    ],
+    members: [
+      {
+        fullName: 'Алексей Смирнов',
+        avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiQF1j34aNj6ObFmgklQHkbbrecFEYiGICCg&usqp=CAU',
+        isProject: false,
+        online: false,
+        id: 3,
+      },
+      {
+        fullName: 'Семен Вологдин',
+        avatar: 'https://cdn.memes.com/profilepics/80627711548565577/imageThumb/1548643563_thumb.jpg',
+        isProject: false,
+        online: true,
+        id: 4,
+      },
+      {
+        fullName: 'Артем Бородихин',
+        avatar: 'https://www.meme-arsenal.com/memes/b6e23b9793806cb7297ac18f3fe41844.jpg',
+        isProject: false,
+        online: false,
+        id: 5,
+      },
     ],
     currentUser: {
       fullName: 'Артем Бородихин',
@@ -268,6 +305,8 @@ export const useChatStore = defineStore('chat', {
       online: false,
       id: 5,
     },
+    showMemberDialogAdd: true,
+    memberAddFilter: '',
   }),
 
   getters: {
@@ -352,44 +391,77 @@ export const useChatStore = defineStore('chat', {
           title: 'Добавить пользователя',
           icon: 'person_add',
           expression: () => true,
-          action: () => this.is.memberAddDialog = true,
+          action: () => this.showMemberDialogAdd = true,
         },
         {
           title: 'Отключить уведомления',
           icon: 'notifications_off',
-          // expression: () => this.getIndexedMembers[this.getCurrentUser.id].notifications,
-          // action: () => this.toggleNotifications(),
+          expression: () => !!this.isNotificationsEnabled,
+          action: () => this.toggleNotifications(),
+          isConfirm: true,
+          confirmOptions: {
+            message: 'Вы действительно хотите отключить уведомления?',
+          },
         },
         {
           title: 'Включить уведомления',
           icon: 'notifications_active',
-          // expression: () => !this.getIndexedMembers[this.getCurrentUser.id].notifications,
-          // action: () => this.toggleNotifications(),
+          expression: () => !this.isNotificationsEnabled,
+          action: () => this.toggleNotifications(),
         },
         {
           title: 'Покинуть чат',
           icon: 'group_remove',
-          expression: () => true,
-          // action: () => this.leaveChat(),
+          expression: () => this.isCurrentUserInChat,
+          action: () => this.leaveChat(),
+          isConfirm: true,
+          confirmOptions: {
+            message: 'Вы действительно хотите покинуть чат?',
+          },
         },
       ];
     },
-    allUsers() {
-      return this.users;
+    indexedUsers() {
+      const result = {};
+
+      for (const user of this.users) {
+        result[user.id] = user;
+      }
+
+      return result;
     },
-    chatMembers() {
-      return this.users.filter(user => user.isMember);
+    indexedMembers() {
+      const result = {};
+
+      for (const member of this.members) {
+        result[member.id] = member;
+      }
+      return result;
+    },
+    isCurrentUserInChat() {
+      return Object.hasOwn(this.indexedMembers, this.currentUser.id);
+    },
+    isNotificationsEnabled() {
+      return this.indexedMembers[this.currentUser.id].isNotifications;
     },
   },
 
   actions: {
     selectMessage(message) {
       this.selectedMessages.set(message.id, message);
+      const messageElement = getMessageElementById(message.id);
+      messageElement.classList.add('chat__message--selected');
+      message.$el = messageElement;
+      message.selected = true;
     },
     unselectMessage(message) {
       this.selectedMessages.delete(message.id);
+      message.$el?.classList.remove('chat__message--selected');
     },
     clearMessageSelection() {
+      for (const message of this.selectedMessages.values()) {
+        message.$el.classList.remove('chat__message--selected');
+      }
       this.selectedMessages.clear();
     },
     pinMessage(messageId) {
@@ -413,6 +485,10 @@ export const useChatStore = defineStore('chat', {
       this.clearMessageSelection();
     },
     sendMessage() {
+      if (!this.isCurrentUserInChat) {
+        this.returnToChat();
+      }
+
       if (this.editingMessageId !== null) {
         const editingMessage = this.indexedMessages[this.editingMessageId];
         editingMessage.text = this.messageText;
@@ -469,6 +545,39 @@ export const useChatStore = defineStore('chat', {
     },
     stopEditingMessage() {
       this.editingMessageId = null;
+    },
+    leaveChat() {
+      this.members = this.members.filter(
+        member => member.id !== this.currentUser.id);
+
+      const currentDate = getCurrentDate();
+      if (!Array.isArray(this.messages[currentDate])) {
+        this.messages[currentDate] = [];
+      }
+
+      this.messages[currentDate].push({
+        type: 'info',
+        userId: this.currentUser.id,
+        text: `Пользователь ${this.currentUser.fullName} покинул чат`,
+      });
+    },
+    returnToChat() {
+      this.members.push(this.currentUser);
+
+      const currentDate = getCurrentDate();
+      if (!Array.isArray(this.messages[currentDate])) {
+        this.messages[currentDate] = [];
+      }
+
+      this.messages[currentDate].push({
+        type: 'info',
+        userId: this.currentUser.id,
+        text: `Пользователь ${this.currentUser.fullName} вернулся в чат`,
+      });
+    },
+    toggleNotifications() {
+      const isNotifications = this.indexedMembers[this.currentUser.id].isNotifications;
+      this.indexedMembers[this.currentUser.id].isNotifications = !isNotifications;
     },
   },
 });

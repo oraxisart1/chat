@@ -1,81 +1,58 @@
 <template>
   <div class="chat__message-form" data-message-form>
-    <q-btn
-      icon="attach_file"
-      unelevated
-      square
-      class="button__hover--disable chat__message-form__button chat__message-form__button_files"
-      @click="filePicker.pickFiles()"
-    ></q-btn>
+    <div class="chat__message-form__replying-message non-selectable" v-if="!!replyingMessage">
+      <q-icon
+        name="reply"
+        size="24px"
+        class="chat__message-form__replying-message__icon chat__message-form__replying-message__icon_reply"
+      ></q-icon>
 
-    <div class="chat__message-form__replying-message" v-if="!!replyingMessage">
-      <div style="width: 10%" class="row justify-center items-center">
-        <q-icon
-          name="reply"
-          style="color: #6FBCF2"
-          size="24px"
-        ></q-icon>
-      </div>
       <div
-        style="width: 80%"
-        class="row non-selectable cursor-pointer"
+        class="chat__message-form__replying-message__content ellipsis"
         @click="scrollToMessage(replyingMessage.id)"
       >
-        <div class="col-12 q-pt-xs">
-          <span style="color: #6FBCF2">{{ replyingMessage.name }}</span>
-        </div>
-        <div class="col-12"
-             style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #F5F5F5">
-          <span>{{ replyingMessage.text }}</span>
-        </div>
+        <span class="chat__message-form__replying-message__content-user">{{ replyingMessage.name }}</span>
+        <span class="chat__message-form__replying-message__content-text ellipsis">{{ replyingMessage.text }}</span>
       </div>
 
-      <div style="width: 10%">
-        <q-icon
-          @click="stopReplyingMessage"
-          class="cursor-pointer"
-          name="clear"
-          style="color: lightgray"
-          size="24px"
-        ></q-icon>
-      </div>
+      <q-icon
+        @click="stopReplyingMessage"
+        class="chat__message-form__replying-message__icon chat__message-form__replying-message__icon_clear"
+        name="clear"
+        size="24px"
+      ></q-icon>
     </div>
 
     <div
-      class="chat__message-form__editing-message"
-      style="height: 40px"
-      v-if="!!editingMessage"
-    >
-      <div style="width: 10%" class="row justify-center items-center">
-        <q-icon
-          name="edit"
-          style="color: #6FBCF2"
-          size="24px"
-        ></q-icon>
-      </div>
+      class="chat__message-form__editing-message non-selectable" v-if="!!editingMessage">
+      <q-icon
+        name="edit"
+        size="24px"
+        class="chat__message-form__editing-message__icon chat__message-form__editing-message__icon_edit"
+      ></q-icon>
+
       <div
-        style="width: 80%"
-        class="row non-selectable cursor-pointer"
+        class="chat__message-form__editing-message__content ellipsis"
         @click="scrollToMessage(editingMessage.id)"
       >
-        <div class="col-12 q-pt-xs">
-          <span style="color: #6FBCF2">Редактирование сообщения</span>
-        </div>
-        <div class="col-12"
-             style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #F5F5F5">
-          <span>{{ editingMessage.text }}</span>
-        </div>
+        <span class="chat__message-form__editing-message__content-user">Редактирование сообщения</span>
+        <span class="chat__message-form__editing-message__content-text ellipsis">{{ editingMessage.text }}</span>
       </div>
-      <div style="width: 10%" class="row justify-center items-center">
-        <q-icon
-          @click="stopEditingMessage"
-          class="cursor-pointer"
-          name="clear"
-          style="color: lightgray"
-          size="24px"
-        ></q-icon>
-      </div>
+
+      <q-icon
+        @click="stopEditingMessage"
+        class="chat__message-form__editing-message__icon chat__message-form__editing-message__icon_clear"
+        name="clear"
+        size="24px"
+      ></q-icon>
     </div>
+
+    <q-icon
+      name="attach_file"
+      size="24px"
+      class="chat__message-form__button chat__message-form__button_files"
+      @click="filePicker.pickFiles()"
+    ></q-icon>
 
     <div
       class="chat__message-form__input"
@@ -85,28 +62,25 @@
       @keydown.enter.exact.prevent="sendMessageHandler"
       placeholder="Введите сообщение..."
       ref="messageInput"
+      @paste.prevent="inputPasteHandler"
     ></div>
 
-    <q-btn
-      icon="mood"
-      unelevated
-      square
-      :class="is.showEmojiPicker ? 'chat__message-form__button_emoji--active' : ''"
+    <q-icon
+      name="mood"
+      size="24px"
       class="button__hover--disable chat__message-form__button"
+      :class="is.showEmojiPicker ? 'chat__message-form__button_emoji--active' : ''"
       @mouseenter="is.btnHovered = true"
       @mouseleave="is.btnHovered = false"
-    >
-    </q-btn>
+    ></q-icon>
 
-    <q-btn
-      icon="send"
+    <q-icon
+      name="send"
+      size="24px"
+      class="button__hover--disable chat__message-form__button chat__message-form__button_send"
       :class="[!!messageText?.trim() ? 'chat__message-form__button_send--active' : '']"
-      unelevated
-      square
       @click="sendMessageHandler"
-      class="button__hover--disable chat__message-form__button"
-    >
-    </q-btn>
+    ></q-icon>
   </div>
 
   <q-file v-model="files" ref="filePicker" v-show="false" multiple></q-file>
@@ -133,9 +107,9 @@
 <!--suppress JSValidateTypes -->
 <script setup>
 import '/node_modules/vue3-emoji-picker/dist/style.css';
-import {useChatStore} from 'stores/chat';
+import {useChatStore} from 'stores/chat/chat';
 import {storeToRefs} from 'pinia';
-import {resizeArea} from 'components/chat/messages-area/messages-area.functions';
+import {resizeArea} from 'components/chat/messages-area/messages-area.storeFunctions';
 import {scrollToBottom} from 'components/chat/messages-area/handlers';
 import {reactive, ref, watch} from 'vue';
 import EmojiPicker from 'vue3-emoji-picker';
@@ -198,4 +172,9 @@ watch(editingMessage, (newValue) => {
   messageInput.value.textContent = newValue?.text ?? '';
   resizeArea();
 });
+
+function inputPasteHandler(event) {
+  const text = event.clipboardData.getData('text/plain');
+  document.execCommand('insertText', false, text);
+}
 </script>

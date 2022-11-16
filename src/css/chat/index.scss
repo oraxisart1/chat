@@ -3,7 +3,7 @@
 @import "message-area";
 @import "message";
 @import "mixins";
-@import "context-menu";
+@import "menu";
 @import "confirm-dialog";
 @import "message-form";
 
@@ -90,6 +90,84 @@
 
       &-text {
         color: white;
+      }
+    }
+  }
+
+  &--leaved {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: white;
+    font-size: 16px;
+
+    &__text {
+      cursor: pointer;
+    }
+  }
+
+  &__dialog-member--add {
+
+    &__card {
+      @include dialog-card();
+      width: 20vw;
+      max-height: 65vh !important;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+
+      &-title {
+        font-weight: bold;
+        text-align: center;
+      }
+
+      &__filter {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid black;
+        margin-top: 10px;
+
+        &-input {
+          width: 100%;
+          margin: 0 5px;
+        }
+      }
+
+      &__list {
+        overflow-y: auto;
+        margin-top: 10px;
+
+        &-user {
+
+          &__avatar {
+            position: relative;
+
+            &-icon {
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              background-color: white;
+              border-radius: 50%;
+              border: none;
+              color: grey;
+            }
+          }
+
+          &__info {
+            display: flex;
+            flex-direction: column;
+
+            &-status {
+              font-size: 11px;
+
+              &.chat__dialog-member--add__card__list-user__info-status--active {
+                color: $primary-color;
+              }
+            }
+          }
+        }
       }
     }
   }

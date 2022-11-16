@@ -1,19 +1,19 @@
 @import "../variables";
 @import "_variables";
-.context__menu {
+.chat__menu {
   background-color: $chat-background;
   font-size: 13px;
   color: white;
 
-  .context__list {
+  &-list {
 
-    .context__item {
+    &__item {
 
       &-avatar {
         font-size: 20px !important;
       }
 
-      &-title {
+      &-content {
       }
     }
   }

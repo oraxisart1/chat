@@ -1,7 +1,7 @@
 <template>
   <q-dialog v-model="isShow" class="chat__confirm-dialog">
     <q-card class="chat__confirm-dialog__card">
-      <q-card-section class="row items-center">
+      <q-card-section class="chat__confirm-dialog__card-message">
         <span class="q-ml-sm">{{ options.message ?? 'Вы уверены?' }}</span>
       </q-card-section>
 

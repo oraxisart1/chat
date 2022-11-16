@@ -1,20 +1,76 @@
 @import '../variables';
 @import "_variables";
+
 .chat__message {
 
-  &.chat__message--selected {
+  &-content {
+    display: flex;
+    flex-direction: column;
 
-    .q-message-text  {
-      background-color: $primary-color;
+    &__text {
+      white-space: pre-wrap !important;
+      width: fit-content;
+    }
 
-      &:before {
+    &__reply {
+      border-left: 3px solid $primary-color;
+      padding-left: 5px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+
+      &-user {
         color: $primary-color;
       }
+
+      &-text {
+        display: inline-block;
+        max-width: calc(100% - 5px);
+      }
+    }
+
+    .chat__messages-file-list {
+      width: 100%;
+    }
+  }
+
+  &-user {
+    width: fit-content;
+    color: $primary-color;
+  }
+
+  &-user, &-avatar {
+    cursor: pointer;
+    transition: 0.2s;
+    margin-right: 10px;
+
+    &:hover {
+      transform: scale(1.1);
+      transition: 0.2s;
+    }
+  }
+
+  &-info {
+    display: flex;
+    justify-content: flex-end;
+
+    &__icon {
+      color: $primary-color;
+
+      &_edit {
+        margin-right: 3px;
+      }
+    }
+
+    &__stamp {
+      font-size: 12px;
     }
   }
 
   &[data-prev-same-user="true"] {
     margin-bottom: 0;
+
     .q-avatar__content, .q-message-text::before {
       display: none !important;
     }
@@ -26,52 +82,17 @@
     }
   }
 
-  .chat__message-content {
+  &--info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 13px;
+
     &__text {
-      white-space: pre-wrap !important;
+      border-radius: 30px;
+      padding: 5px 10px;
+      background-color: #1E2C3A;
     }
-    .chat__message-reply {
-      border-left: 3px solid $primary-color;
-      padding-left: 5px;
-      margin-bottom: 5px;
-      cursor: pointer;
-
-      .chat__message-reply_name {
-        color: $primary-color;
-      }
-
-      .chat__message-reply_text {
-        display: inline-block;
-        max-width: 18vw
-      }
-    }
-
-    .chat__messages-file-list {
-      width: 100%;
-    }
-  }
-
-  .chat__message-name {
-    width: fit-content;
-    color: $primary-color;
-  }
-
-  .chat__message-avatar, .chat__message-name {
-    cursor: pointer;
-    transition: 0.2s;
-    margin-right: 10px;
-
-    &:hover {
-      transform: scale(1.1);
-      transition: 0.2s;
-    }
-  }
-
-  .chat__message-stamp {
-    font-size: 12px;
-  }
-
-  .chat__message-icon {
-    color: $primary-color;
   }
 }

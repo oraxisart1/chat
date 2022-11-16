@@ -7,6 +7,8 @@
   left: 0;
   background-color: $main-grey;
   display: flex;
+  align-items: center;
+  padding: 0 15px;
 
   &__input {
     color: white;
@@ -35,14 +37,20 @@
     max-height: 40px;
     color: black;
     transition: .2s;
+    cursor: pointer;
 
     &:hover {
       color: white;
     }
 
-    &_send--active {
-      color: $primary-color;
+    &_send {
+      margin-left: 15px;
+
+      &--active {
+        color: $primary-color;
+      }
     }
+
 
     &_emoji--active {
       color: white;
@@ -95,5 +103,38 @@
     display: flex;
     background-color: $main-grey;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    height: 40px;
+
+    &__icon {
+      color: $primary-color;
+
+      &_clear {
+        transition: .2s;
+        color: grey;
+        cursor: pointer;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      width: 100%;
+      margin: 0 10px;
+
+      &-user {
+        color: $primary-color;
+      }
+
+      &-text {
+        color: white;
+      }
+    }
   }
 }
