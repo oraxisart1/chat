@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
 import {
+  getMemberContextOptions,
   getMessageContextOptions, getPinnedMessageContextOptions,
 } from 'components/chat/message/message.functions';
 import {getCurrentDate, getCurrentTime} from 'components/chat/chat.functions';
@@ -9,6 +10,13 @@ import {
 import {
   getMessageElementById,
 } from 'components/chat/messages-area/messages-area.functions';
+import {scrollToBottom} from 'components/chat/messages-area/handlers';
+
+const checkDate = (state, date) => {
+  if (!Array.isArray(state.messages[date])) {
+    state.messages[date] = [];
+  }
+};
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -211,7 +219,6 @@ export const useChatStore = defineStore('chat', {
     messageText: '',
     replyingMessageId: null,
     editingMessageId: null,
-    chatFocused: false,
     showFilter: false,
     users: [
       {
@@ -305,8 +312,85 @@ export const useChatStore = defineStore('chat', {
       online: false,
       id: 5,
     },
-    showMemberDialogAdd: true,
+    showMemberDialogAdd: false,
+    showMemberDialogList: false,
+    showDialogFileList: true,
     memberAddFilter: '',
+    memberListFilter: '',
+    files: {
+      1: {
+        id: 1,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 23,
+      },
+      2: {
+        id: 2,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      3: {
+        id: 3,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      4: {
+        id: 4,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      5: {
+        id: 5,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      6: {
+        id: 6,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      7: {
+        id: 7,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      8: {
+        id: 8,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      9: {
+        id: 9,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      10: {
+        id: 10,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      11: {
+        id: 11,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+      12: {
+        id: 12,
+        path: 'http://axiomabio.com/pdf/test.pdf',
+        name: 'test.pdf',
+        messageId: 24,
+      },
+    },
   }),
 
   getters: {
@@ -317,7 +401,7 @@ export const useChatStore = defineStore('chat', {
           message.contextOptions = getMessageContextOptions(message, state);
           if (message.isPinned) {
             message.pinnedContextOptions = getPinnedMessageContextOptions(
-              state, message);
+                state, message);
           }
           const nextMessage = messages[index + 1];
           if (nextMessage && nextMessage.name === message.name) {
@@ -355,18 +439,18 @@ export const useChatStore = defineStore('chat', {
       return result;
     },
     isOtherUserMessageSelected: (state) => !!Array.from(
-      state.selectedMessages.values()).find(message => message.name !== 'me'),
+        state.selectedMessages.values()).find(message => message.name !== 'me'),
     isPinnedMessages: (state) => !!state.pinnedMessagesCount,
     pinnedMessagesCount: (state) => Object.values(
-      state.getPinnedMessages).length,
+        state.getPinnedMessages).length,
     getReplyingMessageId: (state) => state.replyingMessageId,
     getEditingMessageId: (state) => state.editingMessageId,
     replyingMessage: (state) => state.getReplyingMessageId !== null
-      ? state.indexedMessages[state.getReplyingMessageId]
-      : null,
+        ? state.indexedMessages[state.getReplyingMessageId]
+        : null,
     editingMessage: (state) => state.getEditingMessageId !== null
-      ? state.indexedMessages[state.getEditingMessageId]
-      : null,
+        ? state.indexedMessages[state.getEditingMessageId]
+        : null,
     isChatFocused() {
       return this.chatFocused;
     },
@@ -385,7 +469,7 @@ export const useChatStore = defineStore('chat', {
           title: 'Список пользователей',
           icon: 'person',
           expression: () => true,
-          action: () => this.is.membersDialog = true,
+          action: () => this.showMemberDialogList = true,
         },
         {
           title: 'Добавить пользователя',
@@ -425,6 +509,7 @@ export const useChatStore = defineStore('chat', {
       const result = {};
 
       for (const user of this.users) {
+        user.isMember = !!this.indexedMembers[user.id];
         result[user.id] = user;
       }
 
@@ -434,6 +519,7 @@ export const useChatStore = defineStore('chat', {
       const result = {};
 
       for (const member of this.members) {
+        member.contextOptions = getMemberContextOptions(this, member);
         result[member.id] = member;
       }
       return result;
@@ -443,6 +529,53 @@ export const useChatStore = defineStore('chat', {
     },
     isNotificationsEnabled() {
       return this.indexedMembers[this.currentUser.id].isNotifications;
+    },
+    isStartedAction() {
+      return !!this.replyingMessage || !!this.editingMessage ||
+          !!this.getSelectedMessages.size;
+    },
+    groupedFiles() {
+      const result = {};
+      const images = ['png', 'jpg'];
+      const videos = ['mp4', 'webp'];
+
+      for (const file of Object.values(this.files)) {
+        const message = this.indexedMessages[file.messageId];
+        if (message) {
+          const extension = file.path.split('.').pop();
+          file.message = message;
+          if (!result[message.date]?.all) {
+            result[message.date] = {};
+            result[message.date]['all'] = {};
+            result[message.date]['videos'] = {};
+            result[message.date]['images'] = {};
+          }
+
+          if (videos.includes(extension)) {
+            result[message.date]['videos'][file.id] = file;
+          } else if (images.includes(extension)) {
+            result[message.date]['images'][file.id] = file;
+          }
+
+          result[message.date]['all'][file.id] = file;
+        }
+      }
+      return result;
+    },
+    filesCount() {
+      const result = {
+        all: 0,
+        images: 0,
+        videos: 0,
+      };
+
+      for (const files of Object.values(this.groupedFiles)) {
+        result.all += Object.values(files.all).length;
+        result.images += Object.values(files.images).length;
+        result.videos += Object.values(files.videos).length;
+      }
+
+      return result;
     },
   },
 
@@ -472,7 +605,7 @@ export const useChatStore = defineStore('chat', {
     },
     deleteMessage(message) {
       this.messages[message.date] = this.messages[message.date].filter(
-        msg => msg.id !== message.id);
+          msg => msg.id !== message.id);
       if (!this.messages[message.date].length) {
         delete this.messages[message.date];
       }
@@ -547,8 +680,9 @@ export const useChatStore = defineStore('chat', {
       this.editingMessageId = null;
     },
     leaveChat() {
+      this.stopAllActions();
       this.members = this.members.filter(
-        member => member.id !== this.currentUser.id);
+          member => member.id !== this.currentUser.id);
 
       const currentDate = getCurrentDate();
       if (!Array.isArray(this.messages[currentDate])) {
@@ -578,6 +712,43 @@ export const useChatStore = defineStore('chat', {
     toggleNotifications() {
       const isNotifications = this.indexedMembers[this.currentUser.id].isNotifications;
       this.indexedMembers[this.currentUser.id].isNotifications = !isNotifications;
+    },
+    addMembers(members = new Map()) {
+      const date = getCurrentDate();
+      checkDate(this, date);
+      for (const member of members.values()) {
+        this.members.push(member);
+
+        this.messages[date].push({
+          type: 'info',
+          text: `${this.currentUser.fullName} добавил пользователя ${member.fullName}`,
+        });
+      }
+    },
+    filterUsers() {
+      this.users.forEach(user => {
+        const fullName = user.fullName.toLowerCase();
+        const filterValue = this.memberAddFilter.toLowerCase();
+        user.isHidden = fullName.indexOf(filterValue) === -1;
+      });
+    },
+    deleteMember(deleteMember) {
+      this.members = this.members.filter(
+          member => member.id !== deleteMember.id);
+      const date = getCurrentDate();
+      checkDate(this, date);
+      this.messages[date].push({
+        type: 'info',
+        text: `${this.currentUser.fullName} исключил пользователя ${deleteMember.fullName}`,
+      });
+      scrollToBottom(true);
+    },
+    stopAllActions() {
+      if (this.isStartedAction) {
+        this.clearMessageSelection();
+        this.stopReplyingMessage();
+        this.stopEditingMessage();
+      }
     },
   },
 });

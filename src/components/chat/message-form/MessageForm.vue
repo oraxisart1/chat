@@ -115,6 +115,7 @@ import {reactive, ref, watch} from 'vue';
 import EmojiPicker from 'vue3-emoji-picker';
 import {emojiSelectHandler} from 'components/chat/message-form/message-form.handlers';
 import {scrollToMessage} from 'components/chat/handlers';
+import {focusMessageInput} from 'components/chat/message-form/message-form.functions';
 
 const {messageText, replyingMessage, editingMessage} = storeToRefs(useChatStore());
 const {sendMessage, stopReplyingMessage, stopEditingMessage} = useChatStore();
@@ -161,6 +162,7 @@ function sendMessageHandler() {
     sendMessage();
     scrollToBottom(true);
     resizeArea();
+    focusMessageInput();
   }
 }
 

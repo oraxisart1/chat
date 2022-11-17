@@ -7,7 +7,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Закрепить',
       icon: 'push_pin',
       expression: (message) => state.getSelectedMessages.size === 0
-        && !state.getPinnedMessages[message.id],
+          && !state.getPinnedMessages[message.id],
       action: (message) => state.pinMessage(message.id),
       isConfirm: true,
       confirmOptions: {
@@ -18,7 +18,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Открепить',
       icon: 'push_pin',
       expression: (message) => state.getSelectedMessages.size === 0
-        && !!state.getPinnedMessages[message.id],
+          && !!state.getPinnedMessages[message.id],
       action: (message) => state.unpinMessage(message.id),
       isConfirm: true,
       confirmOptions: {
@@ -35,7 +35,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Редактировать',
       icon: 'edit',
       expression: (message) => state.getSelectedMessages.size === 0 &&
-        message.name === 'me',
+          message.name === 'me',
       action: (message) => state.startEditingMessage(message.id),
     },
     {
@@ -48,7 +48,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Удалить',
       icon: 'delete',
       expression: (message) => message.name === 'me' &&
-        state.getSelectedMessages.size === 0,
+          state.getSelectedMessages.size === 0,
       action: (message) => state.deleteMessage(message),
       isConfirm: true,
       confirmOptions: {
@@ -73,7 +73,7 @@ export function getMessageContextOptions(message, state) {
       title: 'Копировать выделенные как текст',
       icon: 'content_copy',
       expression: () => state.getSelectedMessages.size > 0 &&
-        state.getSelectedMessages.has(message.id),
+          state.getSelectedMessages.has(message.id),
       action: () => state.copySelectedMessages(),
     },
     {
@@ -103,9 +103,10 @@ export function getPinnedMessageContextOptions(state, message) {
       icon: 'push_pin',
       title: 'Открепить',
       action: (message) => state.unpinMessage(message.id),
+      expression: (message) => Object.hasOwn(state.getPinnedMessages, message.id),
       /*isConfirm: true,
       confirmOptions: {
-        message: 'Вы действительно хотите открепить сообщение?',
+        message: 'Вы действительно хотите удалить выбранные сообщения?',
       },*/
     },
     {
@@ -116,4 +117,21 @@ export function getPinnedMessageContextOptions(state, message) {
   ];
 
   return getFilteredContextOptions(options, message);
+}
+
+export function getMemberContextOptions(state, member) {
+  const options = [
+    {
+      title: 'Исключить',
+      icon: 'person_remove',
+      expression: (member) => member.id !== state.currentUser.id,
+      action: (member) => state.deleteMember(member),
+      isConfirm: true,
+      confirmOptions: {
+        message: `Вы действительно хотите исключить пользователя ${member.fullName}?`,
+      },
+    },
+  ];
+
+  return getFilteredContextOptions(options, member);
 }

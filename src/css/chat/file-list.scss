@@ -1,0 +1,35 @@
+@import "variables";
+@import "mixins";
+
+.chat__files {
+
+  &__card {
+    @include dialog-card();
+    max-height: 60vh;
+
+    &__tabs {
+
+      &-list {
+
+      }
+
+      &-item {
+
+        &__count {
+          position: absolute;
+          top: 0;
+          left: 70%;
+          font-size: 13px;
+        }
+      }
+    }
+
+    &__panels {
+
+      &-list {
+
+        background-color: inherit;
+      }
+    }
+  }
+}

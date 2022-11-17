@@ -1,0 +1,81 @@
+@import "variables";
+@import "mixins";
+
+.chat__member-add {
+
+  &__card {
+    @include dialog-card();
+    width: 20vw;
+    height: 65vh !important;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
+    &-title {
+      font-weight: bold;
+      text-align: center;
+      height: 30px;
+    }
+
+    &__filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid black;
+      margin-top: 10px;
+      height: 40px;
+
+      &-input {
+        width: 100%;
+        margin: 0 5px;
+      }
+    }
+
+    &__list {
+      overflow-y: auto;
+      margin-top: 10px;
+      height: 100%;
+
+      &-user {
+
+        &__avatar {
+          position: relative;
+
+          &-icon {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            border-radius: 50%;
+            border: none;
+            color: grey;
+          }
+        }
+
+        &__info {
+          display: flex;
+          flex-direction: column;
+
+          &-status {
+            font-size: 11px;
+
+            &--active {
+              color: $primary-color;
+            }
+          }
+        }
+
+        &--selected {
+
+          .chat__member-add__card__list-user__avatar-icon {
+            color: $primary-color !important;
+          }
+        }
+      }
+    }
+
+    &__buttons {
+      height: 40px;
+    }
+  }
+}

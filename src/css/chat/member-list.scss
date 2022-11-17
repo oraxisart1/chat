@@ -1,0 +1,88 @@
+@import "variables";
+@import "mixins";
+
+.chat__member-list {
+
+  &__card {
+    @include dialog-card();
+    display: flex;
+    flex-direction: column;
+    height: 65vh;
+
+    &__header {
+      flex-wrap: nowrap;
+      display: flex;
+      height: 40px;
+      margin-bottom: 10px;
+
+      &__icon {
+
+        &_online, &_add {
+          cursor: pointer;
+          transition: .2s;
+        }
+
+        &_online {
+          &--active, &:hover {
+            color: $primary-color;
+          }
+        }
+
+        &_add:hover {
+          color: $positive-color;
+        }
+      }
+
+      &__content {
+        margin: 0 10px;
+      }
+    }
+
+    &__filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid gray;
+      border-radius: 15px;
+      height: 40px;
+
+      &-input {
+        width: 100%;
+
+        &__native {
+          text-align: center;
+          color: white;
+        }
+      }
+
+      &-icon {
+
+        &_clear {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &__list {
+      overflow-y: auto;
+      margin-top: 10px;
+      height: 100%;
+
+      &-user {
+
+        &__info {
+          display: flex;
+          flex-direction: column;
+
+          &-status {
+            font-size: 11px;
+
+            &--active {
+              color: $primary-color;
+            }
+          }
+        }
+      }
+    }
+  }
+}
