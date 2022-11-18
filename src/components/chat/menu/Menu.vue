@@ -1,17 +1,17 @@
 <template>
   <q-menu
-    :context-menu="contextMenu"
-    :touch-position="touchPosition"
-    auto-close
-    class="chat__menu"
-    :offset="offset"
+      :context-menu="contextMenu"
+      :touch-position="touchPosition"
+      auto-close
+      class="chat__menu"
+      :offset="offset"
   >
     <q-list class="chat__menu-list">
       <template v-for="option in filteredOptions">
         <q-item
-          clickable
-          @click="processAction(option)"
-          class="chat__menu-list__item"
+            clickable
+            @click="processAction(option)"
+            class="chat__menu-list__item"
         >
           <slot name="item">
             <q-item-section avatar v-if="option.icon">
@@ -56,8 +56,11 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  index: {
+    type: Number,
+    default: null,
+  },
 });
-
 
 const dialog = ref();
 const filteredOptions = computed(() => {
@@ -67,13 +70,13 @@ const filteredOptions = computed(() => {
 function processAction(option) {
   if (option.isConfirm) {
     dialog.value.show(option.confirmOptions).then(() => {
-      option.action(props.entity);
+      option.action(props.entity, props.index);
     }).catch(() => {
     });
 
     return;
   }
 
-  option.action(props.entity);
+  option.action(props.entity, props.index);
 }
 </script>

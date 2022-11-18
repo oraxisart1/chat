@@ -11,6 +11,13 @@ import {
   getMessageElementById,
 } from 'components/chat/messages-area/messages-area.functions';
 import {scrollToBottom} from 'components/chat/messages-area/handlers';
+import {
+  getFileContextOptions,
+  getFileElement,
+} from 'components/chat/file-list/file-list.functions';
+import {
+  bytesToSize,
+} from 'components/chat/message-files/message-files.functions';
 
 const checkDate = (state, date) => {
   if (!Array.isArray(state.messages[date])) {
@@ -209,6 +216,11 @@ export const useChatStore = defineStore('chat', {
               path: 'http://axiomabio.com/pdf/test.pdf',
               name: 'test.pdf',
             },
+            {
+              id: 11,
+              path: 'http://axiomabio.com/pdf/test.pdf',
+              name: 'test.pdf',
+            },
           ],
           isRead: false,
         },
@@ -312,9 +324,9 @@ export const useChatStore = defineStore('chat', {
       online: false,
       id: 5,
     },
-    showMemberDialogAdd: false,
+    showMemberDialogAdd: true,
     showMemberDialogList: false,
-    showDialogFileList: true,
+    showDialogFileList: false,
     memberAddFilter: '',
     memberListFilter: '',
     files: {
@@ -391,6 +403,8 @@ export const useChatStore = defineStore('chat', {
         messageId: 24,
       },
     },
+    selectedFiles: new Map(),
+    messageFiles: [],
   }),
 
   getters: {
@@ -462,8 +476,8 @@ export const useChatStore = defineStore('chat', {
         {
           title: 'Список файлов',
           icon: 'folder',
-          // expression: () => this.getFilesCount.all > 0,
-          action: () => this.is.chatFilesModal = true,
+          expression: () => this.filesCount.all > 0,
+          action: () => this.showDialogFileList = true,
         },
         {
           title: 'Список пользователей',
@@ -557,6 +571,8 @@ export const useChatStore = defineStore('chat', {
             result[message.date]['images'][file.id] = file;
           }
 
+          file.contextOptions = getFileContextOptions(this, file);
+
           result[message.date]['all'][file.id] = file;
         }
       }
@@ -574,6 +590,44 @@ export const useChatStore = defineStore('chat', {
         result.images += Object.values(files.images).length;
         result.videos += Object.values(files.videos).length;
       }
+
+      return result;
+    },
+    selectedFilesCount() {
+      return this.selectedFiles.size;
+    },
+    isSelectedFiles() {
+      return !!this.selectedFilesCount;
+    },
+    isOwnFilesSelected() {
+      if (!this.isSelectedFiles) {
+        return false;
+      }
+
+      for (const file of this.selectedFiles.values()) {
+        if (file.message.name !== 'me') {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    isMessageFiles() {
+      return !!this.messageFilesCount;
+    },
+    messageFilesCount() {
+      return this.messageFiles?.length;
+    },
+    formattedMessageFiles() {
+      if (!this.messageFiles) {
+        return [];
+      }
+
+      const result = [];
+      this.messageFiles.forEach(file => {
+        file.sizeString = bytesToSize(file.size);
+        result.push(file);
+      });
 
       return result;
     },
@@ -609,6 +663,10 @@ export const useChatStore = defineStore('chat', {
       if (!this.messages[message.date].length) {
         delete this.messages[message.date];
       }
+
+      if (message.files?.length) {
+        message.files.forEach(this.deleteFile);
+      }
     },
     deleteSelectedMessages() {
       for (const message of this.selectedMessages.values()) {
@@ -641,6 +699,17 @@ export const useChatStore = defineStore('chat', {
         stamp: getCurrentTime(),
         text: this.messageText,
       };
+
+      if (this.messageFiles.length) {
+        newMessage.files = [];
+        this.messageFiles.forEach(file => newMessage.files.push({
+          id: Date.now(),
+          name: file.name,
+          path: 'http://axiomabio.com/pdf/test.pdf',
+        }));
+
+        this.clearMessageFiles();
+      }
 
       if (this.replyingMessageId) {
         newMessage.replyMessageId = this.replyingMessageId;
@@ -678,6 +747,7 @@ export const useChatStore = defineStore('chat', {
     },
     stopEditingMessage() {
       this.editingMessageId = null;
+      this.messageText = '';
     },
     leaveChat() {
       this.stopAllActions();
@@ -749,6 +819,40 @@ export const useChatStore = defineStore('chat', {
         this.stopReplyingMessage();
         this.stopEditingMessage();
       }
+    },
+    selectFile(file) {
+      this.selectedFiles.set(file.id, file);
+      const $element = getFileElement(file.id);
+      $element.classList.add('chat__files__card-list__group-item--selected');
+    },
+    unselectFile(file) {
+      this.selectedFiles.delete(file.id);
+      const $element = getFileElement(file.id);
+      $element.classList.remove('chat__files__card-list__group-item--selected');
+    },
+    clearFileSelection() {
+      for (const file of this.selectedFiles.values()) {
+        this.unselectFile(file);
+      }
+    },
+    deleteSelectedFiles() {
+      for (const file of this.selectedFiles.values()) {
+        this.deleteMessage(file.message);
+      }
+
+      this.clearFileSelection();
+    },
+    deleteFile(file) {
+      delete this.files[file.id];
+    },
+    addMessageFiles(files) {
+      this.messageFiles.push(...files);
+    },
+    deleteMessageFile(index) {
+      this.messageFiles.splice(index, 1);
+    },
+    clearMessageFiles() {
+      this.messageFiles = [];
     },
   },
 });

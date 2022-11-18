@@ -5,9 +5,13 @@
 
   &__card {
     @include dialog-card();
-    max-height: 60vh;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
 
     &__tabs {
+      padding-bottom: 0;
+      height: 100px;
 
       &-list {
 
@@ -25,10 +29,38 @@
     }
 
     &__panels {
+      padding-top: 0;
+      overflow-y: auto !important;
+      height: 100%;
 
       &-list {
 
         background-color: inherit;
+      }
+    }
+
+    &-list {
+
+      &__group {
+
+        &-item {
+
+          &--selected {
+
+            color: $primary-color;
+          }
+        }
+      }
+
+      &--not-found {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &__text {
+          font-size: 16px;
+          color: rgba(255, 255, 255, .7);
+        }
       }
     }
   }

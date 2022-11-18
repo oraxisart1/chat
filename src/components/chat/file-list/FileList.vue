@@ -15,50 +15,49 @@
         </q-tabs>
       </q-card-section>
 
-      <q-card-section class="chat__files__card__panels">
+      <q-card-section class="chat__files__card__panels chat__scrollbar--custom">
         <q-tab-panels v-model="tab" class="chat__files__card__panels-list">
           <q-tab-panel
               v-for="tab in tabs"
               :name="tab.name"
-              class="chat__files-list"
+              class="chat__files__card-list"
           >
-            <div
-                v-for="(files, date) in groupedFiles"
-                class="chat__files-list__group"
-            >
+            <template v-if="!!filesCount[tab.target]">
+              <div
+                  v-for="(files, date) in groupedFiles"
+                  class="chat__files__card-list__group"
+              >
                 <span
-                    class="chat__files-list__group-date"
+                    class="chat__files__card-list__group-date"
                 >
-                    {{ new Date(date).toLocaleDateString(undefined, {month: 'long'}) }}
+                    {{ formatFilesDate(date) }}
                 </span>
-              <q-list>
-                <q-item clickable v-for="file in files[tab.target]">
-                  <q-item-section avatar>
-                    <q-avatar>
-                      <q-icon name="insert_drive_file"></q-icon>
-                    </q-avatar>
-                  </q-item-section>
-                  <q-item-section>{{ file.name }}</q-item-section>
-                  <q-menu
-                      context-menu
-                      touch-position
-                      auto-close
+                <q-list>
+                  <q-item
+                      @click="fileClickHandler(file)"
+                      clickable
+                      v-for="file in files[tab.target]"
+                      :data-file-id="file.id"
+                      class="chat__files__card-list__group-item"
                   >
-                    <q-list class="message-context-menu">
-                      <template v-for="option in options.fileListContext">
-                        <q-item clickable v-if="option.expression?.(file) ?? true"
-                                @click="option.action(file)">
-                          <q-item-section avatar>
-                            <q-icon :name="option.icon"></q-icon>
-                          </q-item-section>
-                          <q-item-section>{{ option.title }}</q-item-section>
-                        </q-item>
-                      </template>
-                    </q-list>
-                  </q-menu>
-                </q-item>
-              </q-list>
-            </div>
+                    <q-item-section avatar>
+                      <q-avatar>
+                        <q-icon name="insert_drive_file"></q-icon>
+                      </q-avatar>
+                    </q-item-section>
+                    <q-item-section>{{ file.name }}</q-item-section>
+
+                    <Menu :entity="file" :options="file.contextOptions"></Menu>
+                  </q-item>
+                </q-list>
+              </div>
+            </template>
+
+            <template v-else>
+              <div class="chat__files__card-list--not-found">
+                <span class="chat__files__card-list--not-found__text">Файлы не найдены</span>
+              </div>
+            </template>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -66,19 +65,30 @@
   </q-dialog>
 </template>
 
+<!--suppress JSValidateTypes -->
 <script setup>
 import {useChatStore} from 'stores/chat/chat';
 import {ref} from 'vue';
 import {storeToRefs} from 'pinia';
+import {downloadFile} from 'components/chat/chat.functions';
+import {formatFilesDate} from 'components/chat/file-list/file-list.functions';
+import Menu from 'components/chat/menu/Menu';
 
 const store = useChatStore();
 
 const {
   filesCount,
   groupedFiles,
+  selectedFiles,
+  isSelectedFiles,
 } = storeToRefs(store);
 
-const tab = ref('images');
+const {
+  unselectFile,
+  selectFile,
+} = store;
+
+const tab = ref('files');
 const tabs = ref([
   {
     label: 'Изображения',
@@ -99,6 +109,18 @@ const tabs = ref([
     icon: 'insert_drive_file',
   },
 ]);
+
+function isFileSelected(file) {
+  return selectedFiles.value.has(file.id);
+}
+
+function fileClickHandler(file) {
+  if (!isSelectedFiles.value) {
+    return downloadFile(file.path);
+  }
+
+  return isFileSelected(file) ? unselectFile(file) : selectFile(file);
+}
 </script>
 
 <style scoped>

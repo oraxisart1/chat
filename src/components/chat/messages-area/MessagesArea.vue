@@ -16,7 +16,7 @@
             class="chat__messages-date"
             @click="isShowDatePicker = true"
         >
-          {{ formatDate(date) }}
+          {{ formatMessagesDate(date) }}
         </div>
 
         <div
@@ -101,7 +101,7 @@
 import {computed, ref} from 'vue';
 import {storeToRefs} from 'pinia';
 import {useChatStore} from 'stores/chat/chat';
-import {formatDate, getDateElement} from 'components/chat/messages-area/messages-area.storeFunctions';
+import {formatMessagesDate, getDateElement} from 'components/chat/messages-area/messages-area.functions';
 import Message from 'components/chat/message/Message';
 import ContextMenu from 'components/chat/menu/Menu';
 import {scrollToBottom} from 'components/chat/messages-area/handlers';

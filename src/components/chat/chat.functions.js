@@ -36,3 +36,16 @@ export function getCurrentTime() {
 
   return date.toLocaleTimeString('ru-RU', options);
 }
+
+export function downloadFile(path) {
+  const link = document.createElement('a');
+  link.download = 'true';
+  link.target = '_blank';
+  link.href = path;
+  link.click();
+}
+
+export function formatDate(date, options) {
+  const result = new Date(date).toLocaleDateString(undefined, options);
+  return result === 'Invalid Date' ? '—' : result;
+}

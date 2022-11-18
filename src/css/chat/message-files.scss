@@ -1,0 +1,105 @@
+@import "variables";
+@import "mixins";
+
+.chat__message-files {
+
+  &__card {
+
+    @include dialog-card(67vw);
+    display: flex;
+    flex-direction: column;
+    width: 25vw;
+
+    &-header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 8vh;
+
+      &__button {
+
+        &_cancel {
+          width: 10%;
+          transition: .2s;
+
+          &:hover {
+            color: red;
+          }
+        }
+
+        &_add {
+          transition: .2s;
+
+          &:hover {
+            color: $positive-color;
+          }
+        }
+
+        &_send {
+          background-color: $primary-color;
+          transition: .2s;
+
+          &:hover {
+            filter: #{"hue-rotate(45deg)"};
+          }
+        }
+      }
+
+
+      &__text {
+        width: 100%;
+        padding-left: 5px;
+      }
+    }
+
+    &-content {
+
+      &__list {
+        overflow-y: auto;
+        max-height: 65vh;
+      }
+
+      &__item {
+
+        &-avatar {
+
+        }
+
+        &-info {
+
+          &__name {
+            max-width: calc(100% - 5px);
+          }
+
+          &__size {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .6);
+          }
+        }
+      }
+    }
+
+    &-message {
+
+      &__input {
+        max-height: 10vh;
+
+        &__native {
+          color: white;
+          padding: 5px 10px;
+          border: 1px solid lightgray;
+          border-radius: 5px;
+          max-height: 10vh;
+          overflow-y: auto;
+
+          &:hover, &:focus {
+            border-color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+
+}

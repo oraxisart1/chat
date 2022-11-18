@@ -30,6 +30,7 @@
             autofocus
             class="chat__member-add__card__filter-input"
             data-type="filter-input"
+            @keydown.enter.exact.stop="inputEnterHandler"
         ></q-input>
 
         <q-btn
@@ -53,7 +54,7 @@
             @click.right.prevent
             class="chat__member-add__card__list-user"
             :clickable="!user.isMember"
-            @click="userClickHandler(user)"
+            @click="userSelectHandler(user)"
             :data-user-id="user.id"
             :key="user.id"
             v-show="!user.isHidden"
@@ -125,21 +126,26 @@ const userList = ref();
 const dialog = ref();
 const selectedCount = computed(() => selectedMembers.value.size);
 const buttonAddLabel = computed(() => `Добавить ${selectedCount.value ? '(' + selectedCount.value + ')' : ''}`);
+const shownUsers = computed(() => Object.values(indexedUsers.value).filter(user => !user.isHidden));
 
-function userClickHandler(user) {
+function userSelectHandler(user) {
   if (user.isMember) {
     return;
   }
 
+  isUserSelected(user.id) ? unselectUser(user) : selectUser(user);
+}
+
+function selectUser(user) {
   const userElement = getUserElement(user.id);
-  const activeClass = 'chat__member-add__card__list-user--selected';
-  if (selectedMembers.value.has(user.id)) {
-    selectedMembers.value.delete(user.id);
-    userElement.classList.remove(activeClass);
-  } else {
-    selectedMembers.value.set(user.id, user);
-    userElement.classList.add(activeClass);
-  }
+  selectedMembers.value.set(user.id, user);
+  userElement.classList.add('chat__member-add__card__list-user--selected');
+}
+
+function unselectUser(user) {
+  const userElement = getUserElement(user.id);
+  selectedMembers.value.delete(user.id);
+  userElement.classList.remove('chat__member-add__card__list-user--selected');
 }
 
 function getUserElement(userId) {
@@ -196,6 +202,14 @@ function addHandler() {
   addMembers(selectedMembers.value);
   hideDialog();
   scrollToBottom(true);
+}
+
+function inputEnterHandler() {
+  const users = shownUsers.value;
+  if (users[0]) {
+    userSelectHandler(users[0]);
+    clearFilter();
+  }
 }
 
 watch(memberAddFilter, filterUsers);
