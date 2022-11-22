@@ -324,7 +324,7 @@ export const useChatStore = defineStore('chat', {
       online: false,
       id: 5,
     },
-    showMemberDialogAdd: true,
+    showMemberDialogAdd: false,
     showMemberDialogList: false,
     showDialogFileList: false,
     memberAddFilter: '',
